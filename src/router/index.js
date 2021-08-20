@@ -1,16 +1,21 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 
-Vue.use(Router)
-const routes = [{
-	path: '/',
-	component: () => import('@/layout/layout'),
-	children: [{
-		path: '',
-		component: () => import('@/pages/abi'),
-		name: 'Abi'
-	}]
-}]
-export default new Router({
-	routes
+export default createRouter({
+    history: createWebHashHistory(),
+    routes: [{
+        path: '/',
+        component: () => import('@/layout/layout'),
+        children: [
+            {
+                path: '/deploy',
+                // component: () => import('@/views/deploy/deploy'),
+                name: 'farm'
+            },
+            {
+                path: '/execute',
+                // component: () => import('@/views/execute/execute'),
+                name: 'execute'
+            }
+        ]
+    }]
 })
