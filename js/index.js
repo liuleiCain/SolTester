@@ -102,6 +102,7 @@ async function sendTx(obj) {
         $("#abiInput").find("input").each(function (i) {
             args.push($(this).val())
         })
+        layer.load();
         if (args.length === 0) {
             contract[abiSingle.name](function (err, res) {
                 if (err) {
@@ -109,6 +110,7 @@ async function sendTx(obj) {
                 } else {
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
+                layer.closeAll('loading');
             })
         } else {
             contract[abiSingle.name](...args, function (err, res) {
@@ -117,6 +119,7 @@ async function sendTx(obj) {
                 } else {
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
+                layer.closeAll('loading');
             })
         }
 
