@@ -9,9 +9,9 @@ layui.use(['form', 'layer', 'code'], function () {
         let html = "";
         for (let v of abiMethod.inputs) {
             html += '<div class="layui-form-item">\n' +
-                '    <label class="layui-form-label">参数：</label>' +
+                '    <label class="layui-form-label">' + v.name + '：</label>' +
                 '    <div class="layui-input-block">\n' +
-                '      <input type="text" name="params" id="params" placeholder="' + v.name + '" autocomplete="off" class="layui-input">\n' +
+                '      <input type="text" name="params" id="params" placeholder="' + v.type + '" autocomplete="off" class="layui-input" argType="' + v.type + '">\n' +
                 '    </div>\n' +
                 '  </div>'
         }
@@ -100,9 +100,16 @@ async function sendTx(obj) {
         //获取参数
         let args = []
         $("#abiInput").find("input").each(function (i) {
-            args.push($(this).val())
+            let argType = $(this).attr("argType");
+            if (argType.indexOf("[]") !== -1) {
+                args.push(JSON.parse($(this).val()))
+            } else {
+                args.push($(this).val())
+            }
         })
-        layer.load();
+
+        console.log(args)
+        // layer.load();
         if (args.length === 0) {
             contract[abiSingle.name](function (err, res) {
                 if (err) {
@@ -127,10 +134,6 @@ async function sendTx(obj) {
         console.log(e)
         $("#content").text(JSON.stringify(e, null, "\t"))
     }
-}
-
-function f(key, value) {
-    return value.toString();
 }
 
 function isJSON(str) {
