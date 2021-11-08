@@ -1,23 +1,7 @@
-let form, layer;
+let form, layer, xmSelectAbi;
 layui.use(['form', 'layer', 'code'], function () {
     form = layui.form;
     layer = layui.layer;
-    form.on('select(abiMethod)', function (data) {
-        $("#abiInput").html("")
-        let abi = JSON.parse($("#abi").val())
-        let abiMethod = abi[data.value]
-        let html = "";
-        for (let v of abiMethod.inputs) {
-            html += '<div class="layui-form-item">\n' +
-                '    <label class="layui-form-label">' + v.name + '：</label>' +
-                '    <div class="layui-input-block">\n' +
-                '      <input type="text" name="params" id="params" placeholder="' + v.type + '" autocomplete="off" class="layui-input" argType="' + v.type + '">\n' +
-                '    </div>\n' +
-                '  </div>'
-        }
-        $("#abiInput").html(html)
-        form.render()
-    });
 });
 
 function connectWeb3(obj) {
@@ -53,18 +37,57 @@ function updateAbi(obj) {
         $("#abiMethod").append("<option value=''></option>")
     } else {
         let abi = JSON.parse(obj.value)
+        let readArr = []
+        let writeArr = []
         for (let i in abi) {
             if (abi[i].type == 'function') {
                 switch (abi[i].stateMutability) {
                     case "view":
-                        $("#abiMethod").append("<option value='" + i + "'>" + abi[i].name + "(read)</option>")
+                        readArr.push({
+                            name: abi[i].name, value: i, selected: false
+                        })
                         break;
                     default:
-                        $("#abiMethod").append("<option value='" + i + "'>" + abi[i].name + "(write)</option>")
+                        writeArr.push({
+                            name: abi[i].name, value: i, selected: false
+                        })
                 }
-
             }
         }
+        xmSelectAbi = xmSelect.render({
+            el: '#abiMethod',
+            toolbar: {
+                show: true,
+            },
+            filterable: true,
+            radio: true,
+            style: {
+                width: "100%",
+            },
+            height: "500px",
+            data: [
+                {name: '读', children: readArr},
+                {name: '写', children: writeArr},
+            ],
+            on: function (data) {
+                $("#abiInput").html("")
+                let abi = JSON.parse($("#abi").val())
+                if (data.arr.length > 0) {
+                    let abiMethod = abi[data.arr[0].value]
+                    let html = "";
+                    for (let v of abiMethod.inputs) {
+                        html += '<div class="layui-form-item">\n' +
+                            '    <label class="layui-form-label">' + v.name + '：</label>' +
+                            '    <div class="layui-input-block">\n' +
+                            '      <input type="text" name="params" id="params" placeholder="' + v.type + '" autocomplete="off" class="layui-input" argType="' + v.type + '">\n' +
+                            '    </div>\n' +
+                            '  </div>'
+                    }
+                    $("#abiInput").html(html)
+                }
+
+            },
+        })
     }
     form.render()
 }

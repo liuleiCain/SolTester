@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Sol Tester</title>
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon"/>
     <link rel="stylesheet" href="/css/layui.css">
     <script src="/js/jquery.min.js"></script>
+    <script src="/js/xm-select.js"></script>
 </head>
 <body>
 
@@ -57,12 +58,10 @@
             </div>
 
 
-            <div class="layui-form-item layui-col-xs6">
+            <div class="layui-form-item">
                 <label class="layui-form-label">合约方法：</label>
-                <div class="layui-input-block">
-                    <select name="interest" lay-filter="abiMethod" id="abiMethod">
-                        <option value=""></option>
-                    </select>
+                <div class="layui-input-block"  id="abiMethod">
+
                 </div>
             </div>
             <div class="layui-form-item" id="abiInput">
