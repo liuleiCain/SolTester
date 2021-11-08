@@ -61,6 +61,7 @@ function updateAbi(obj) {
             },
             filterable: true,
             radio: true,
+            clickClose: true,
             style: {
                 width: "100%",
             },
@@ -140,6 +141,7 @@ async function sendTx(obj) {
                 if (err) {
                     $("#content").text(JSON.stringify(err, null, "\t"))
                 } else {
+                    res = transferJson(res)
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
                 layer.closeAll('loading');
@@ -149,6 +151,7 @@ async function sendTx(obj) {
                 if (err) {
                     $("#content").text(JSON.stringify(err, null, "\t"))
                 } else {
+                    res = transferJson(res)
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
                 layer.closeAll('loading');
@@ -164,7 +167,7 @@ async function sendTx(obj) {
 function isJSON(str) {
     if (typeof str == 'string') {
         try {
-            var obj = JSON.parse(str);
+            let obj = JSON.parse(str);
             if (typeof obj == 'object' && obj) {
                 return true;
             } else {
@@ -175,6 +178,24 @@ function isJSON(str) {
             console.log('error：' + str + '!!!' + e);
             return false;
         }
+    }
+}
+
+function transferJson(data) {
+    try {
+        data = JSON.stringify(data)
+        data = JSON.parse(data)
+
+        if (typeof data === 'string') {
+            data = data.toString()
+        } else if (typeof data === 'object') {
+            for (let i in data) {
+                data[i] = data[i].toString()
+            }
+        }
+        return data
+    } catch (e) {
+        return data
     }
 }
 
