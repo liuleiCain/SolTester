@@ -111,11 +111,14 @@ async function sendTx(obj) {
             layer.alert('Abi内容错误');
             return false;
         }
-        let abiMethod = $("#abiMethod").val()
-        if (abiMethod === "") {
+        let abiMethod = xmSelectAbi.getValue()
+        console.log(abiMethod)
+        if (abiMethod.length === 0) {
             layer.alert('选择执行的合约方法');
             return false;
         }
+        abiMethod = abiMethod[0].value;
+
         let abi = JSON.parse($("#abi").val())
         let abiSingle = abi[abiMethod]
         let contract = await web3.eth.contract(abi).at(contractAddress)
@@ -131,8 +134,7 @@ async function sendTx(obj) {
             }
         })
 
-        console.log(args)
-        // layer.load();
+        layer.load();
         if (args.length === 0) {
             contract[abiSingle.name](function (err, res) {
                 if (err) {
