@@ -9,10 +9,6 @@
 </head>
 <body>
 
-<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
-    <legend>合约调试</legend>
-</fieldset>
-
 <div class="layui-col-xs6">
     <form class="layui-form">
         <blockquote class="layui-elem-quote">
@@ -92,7 +88,7 @@
         $("#send").click(function () {
             if ($("#abi").val() !== "") {
                 sendTx(abiList[$("#abi").val()])
-            }else {
+            } else {
                 layer.msg("")
             }
         })

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sol Tester</title>
+    <link rel="stylesheet" href="/css/layui.css">
+</head>
+<body>
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>Sol Tester</legend>
+</fieldset>
+
+<blockquote class="layui-elem-quote">
+    Sql Tester主要是提供solidity合约的在线部署、查询、调试作等功能。
+</blockquote>
+
+<blockquote class="layui-elem-quote layui-quote-nm">
+    需要注意一下功能说明：
+    <br>
+    1.使用流程：（1）安装metamask  (2) 点击上方按钮连接（3）导入abi json内容 （4）选择abi进行合约部署和调试。
+    <br>
+    2.ABI json数据主要存储在本地的浏览器数据当中，<b>用户清除缓存等行为可能会导致ABI数据的丢失，请您知悉！！！</b>，另注明本地存储ABI数据会有上限限制！
+    <br>
+    3.因精力原因，可能会存在相当一部分BUG和体验问题，有问题请致邮 1371515474@qq.com。
+</blockquote>
+
+<script src="/layui.js"></script>
+<script src="/js/index.js"></script>
+<script>
+    let form, layer, xmSelectAbi;
+    let abiList = window.localStorage.getItem("AbiList")
+    abiList = abiList ? JSON.parse(abiList) : []
+
+    layui.use(['form', 'layer', 'code'], function () {
+        form = layui.form;
+        layer = layui.layer;
+
+        if (abiList.length > 0) {
+            let html = ""
+            for (let i in abiList) {
+                html += "<option value='" + i + "'>" + abiList[i].name + "</option>"
+            }
+            $("#abi").append(html)
+            form.render()
+        }
+
+        form.on('select(abi)', function (data) {
+            updateAbi(abiList[data.value].abi)
+        });
+    });
+
+    $(function () {
+        $("#send").click(function () {
+            if ($("#abi").val() !== "") {
+                sendTx(abiList[$("#abi").val()])
+            }else {
+                layer.msg("")
+            }
+        })
+    })
+</script>
+</body>
+</html>

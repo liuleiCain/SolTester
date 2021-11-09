@@ -76,8 +76,8 @@ async function sendTx(abi) {
         }
         abiMethod = abiMethod[0].value;
 
-        let abiSingle = abi[abiMethod]
-        let contract = await web3.eth.contract(abi).at(contractAddress)
+        let abiSingle = abi.abi[abiMethod]
+        let contract = await web3.eth.contract(abi.abi).at(contractAddress)
 
         //获取参数
         let args = []
@@ -115,6 +115,7 @@ async function sendTx(abi) {
 
     } catch (e) {
         console.log(e)
+        layer.closeAll('loading');
         $("#content").text(JSON.stringify(e, null, "\t"))
     }
 }
