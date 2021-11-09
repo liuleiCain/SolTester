@@ -4,31 +4,6 @@ layui.use(['form', 'layer', 'code'], function () {
     layer = layui.layer;
 });
 
-function connectWeb3(obj) {
-    if (typeof window.ethereum == 'undefined') {
-        layer.alert('MetaMask not installed!');
-        return false;
-    }
-    if (window.ethereum) {
-        try {
-            // 请求用户授权
-            window.ethereum.enable();
-        } catch (error) {
-            // 用户不授权时
-            console.error("User denied account access")
-        }
-    }
-    web3js = new Web3(window.ethereum);//web3js就是你需要的web3实例
-    web3js.eth.getAccounts(function (error, result) {
-        if (!error) {
-            $(obj).html("已连接")
-            $(obj).addClass("layui-btn-disabled")
-            $("#account").val(result[0])
-            $("#chain").val(window.ethereum.networkVersion)
-        }
-    });
-}
-
 function updateAbi(obj) {
     if (!isJSON(obj.value)) {
         layer.msg("Abi内容错误")
@@ -198,15 +173,3 @@ function transferJson(data) {
         return data
     }
 }
-
-window.ethereum.on('accountsChanged', (accounts) => {
-    if (window.ethereum.isConnected()) {
-        $("#account").val(accounts[0] || "")
-    }
-});
-
-window.ethereum.on('chainChanged', (chainId) => {
-    if (window.ethereum.isConnected()) {
-        $("#chain").val(window.ethereum.networkVersion)
-    }
-});

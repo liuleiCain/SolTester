@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sol Tester</title>
+    <link rel="stylesheet" href="/css/layui.css">
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/xm-select.js"></script>
+</head>
+<body>
+
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+    <legend>合约调试</legend>
+</fieldset>
+
+<div class="layui-col-xs6">
+    <form class="layui-form">
+        <blockquote class="layui-elem-quote">
+            合约初始化
+        </blockquote>
+
+        <div class="layui-col-sm-offset1">
+            <div class="layui-form-item">
+                <label class="layui-form-label">合约地址：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="title" placeholder="请输入合约地址" class="layui-input" id="address">
+                </div>
+            </div>
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label">合约Abi：</label>
+                <div class="layui-input-block">
+                    <textarea placeholder="请输入合约Abi数组" class="layui-textarea" id="abi"
+                              onchange="updateAbi(this)"></textarea>
+                </div>
+            </div>
+
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">合约方法：</label>
+                <div class="layui-input-block"  id="abiMethod">
+
+                </div>
+            </div>
+            <div class="layui-form-item" id="abiInput">
+
+            </div>
+            <br>
+            <button type="button" class="layui-btn layui-btn-normal" onclick="sendTx(this)">发送Send</button>
+        </div>
+    </form>
+</div>
+<div class="layui-col-xs6">
+    <div class="layui-bg-gray" style="padding: 30px;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-card">
+                <div class="layui-card-header">请求结果</div>
+                <pre class="layui-code" lay-title="JavaScript" lay-skin="notepad" id="content">
+
+                </pre>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/layui.js"></script>
+<script src="/js/index.js"></script>
+</body>
+</html>
