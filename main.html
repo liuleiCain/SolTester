@@ -29,15 +29,16 @@
             <div class="layui-form-item layui-form-text">
                 <label class="layui-form-label">合约Abi：</label>
                 <div class="layui-input-block">
-                    <textarea placeholder="请输入合约Abi数组" class="layui-textarea" id="abi"
-                              onchange="updateAbi(this)"></textarea>
+                    <select name="abi" lay-verify="required" id="abi" lay-filter="abi">
+                        <option value=""></option>
+                    </select>
                 </div>
             </div>
 
 
             <div class="layui-form-item">
                 <label class="layui-form-label">合约方法：</label>
-                <div class="layui-input-block"  id="abiMethod">
+                <div class="layui-input-block" id="abiMethod">
 
                 </div>
             </div>
@@ -45,7 +46,7 @@
 
             </div>
             <br>
-            <button type="button" class="layui-btn layui-btn-normal" onclick="sendTx(this)">发送Send</button>
+            <button type="button" class="layui-btn layui-btn-normal" id="send">发送Send</button>
         </div>
     </form>
 </div>
@@ -64,5 +65,38 @@
 
 <script src="/layui.js"></script>
 <script src="/js/index.js"></script>
+<script>
+    let form, layer, xmSelectAbi;
+    let abiList = window.localStorage.getItem("AbiList")
+    abiList = abiList ? JSON.parse(abiList) : []
+
+    layui.use(['form', 'layer', 'code'], function () {
+        form = layui.form;
+        layer = layui.layer;
+
+        if (abiList.length > 0) {
+            let html = ""
+            for (let i in abiList) {
+                html += "<option value='" + i + "'>" + abiList[i].name + "</option>"
+            }
+            $("#abi").append(html)
+            form.render()
+        }
+
+        form.on('select(abi)', function (data) {
+            updateAbi(abiList[data.value].abi)
+        });
+    });
+
+    $(function () {
+        $("#send").click(function () {
+            if ($("#abi").val() !== "") {
+                sendTx(abiList[$("#abi").val()])
+            }else {
+                layer.msg("")
+            }
+        })
+    })
+</script>
 </body>
 </html>

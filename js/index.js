@@ -1,74 +1,59 @@
-let form, layer, xmSelectAbi;
-layui.use(['form', 'layer', 'code'], function () {
-    form = layui.form;
-    layer = layui.layer;
-});
-
-function updateAbi(obj) {
-    if (!isJSON(obj.value)) {
-        layer.msg("Abi内容错误")
-        obj.value = ""
-        document.getElementById("abiMethod").options.length = 0;
-        $("#abiMethod").append("<option value=''></option>")
-    } else {
-        let abi = JSON.parse(obj.value)
-        let readArr = []
-        let writeArr = []
-        for (let i in abi) {
-            if (abi[i].type == 'function') {
-                switch (abi[i].stateMutability) {
-                    case "view":
-                        readArr.push({
-                            name: abi[i].name, value: i, selected: false
-                        })
-                        break;
-                    default:
-                        writeArr.push({
-                            name: abi[i].name, value: i, selected: false
-                        })
-                }
+function updateAbi(abi) {
+    let readArr = []
+    let writeArr = []
+    for (let i in abi) {
+        if (abi[i].type == 'function') {
+            switch (abi[i].stateMutability) {
+                case "view":
+                    readArr.push({
+                        name: abi[i].name, value: i, selected: false
+                    })
+                    break;
+                default:
+                    writeArr.push({
+                        name: abi[i].name, value: i, selected: false
+                    })
             }
         }
-        xmSelectAbi = xmSelect.render({
-            el: '#abiMethod',
-            toolbar: {
-                show: true,
-            },
-            filterable: true,
-            radio: true,
-            clickClose: true,
-            style: {
-                width: "100%",
-            },
-            height: "500px",
-            data: [
-                {name: '读', children: readArr},
-                {name: '写', children: writeArr},
-            ],
-            on: function (data) {
-                $("#abiInput").html("")
-                let abi = JSON.parse($("#abi").val())
-                if (data.arr.length > 0) {
-                    let abiMethod = abi[data.arr[0].value]
-                    let html = "";
-                    for (let v of abiMethod.inputs) {
-                        html += '<div class="layui-form-item">\n' +
-                            '    <label class="layui-form-label">' + v.name + '：</label>' +
-                            '    <div class="layui-input-block">\n' +
-                            '      <input type="text" name="params" id="params" placeholder="' + v.type + '" autocomplete="off" class="layui-input" argType="' + v.type + '">\n' +
-                            '    </div>\n' +
-                            '  </div>'
-                    }
-                    $("#abiInput").html(html)
-                }
-
-            },
-        })
     }
+    xmSelectAbi = xmSelect.render({
+        el: '#abiMethod',
+        toolbar: {
+            show: true,
+        },
+        filterable: true,
+        radio: true,
+        clickClose: true,
+        style: {
+            width: "100%",
+        },
+        height: "500px",
+        data: [
+            {name: '读', children: readArr},
+            {name: '写', children: writeArr},
+        ],
+        on: function (data) {
+            $("#abiInput").html("")
+            if (data.arr.length > 0) {
+                let abiMethod = abi[data.arr[0].value]
+                let html = "";
+                for (let v of abiMethod.inputs) {
+                    html += '<div class="layui-form-item">\n' +
+                        '    <label class="layui-form-label">' + v.name + '：</label>' +
+                        '    <div class="layui-input-block">\n' +
+                        '      <input type="text" name="params" id="params" placeholder="' + v.type + '" autocomplete="off" class="layui-input" argType="' + v.type + '">\n' +
+                        '    </div>\n' +
+                        '  </div>'
+                }
+                $("#abiInput").html(html)
+            }
+
+        },
+    })
     form.render()
 }
 
-async function sendTx(obj) {
+async function sendTx(abi) {
     try {
         let contractAddress = $("#address").val()
         if (typeof window.ethereum == 'undefined') {
@@ -83,19 +68,14 @@ async function sendTx(obj) {
             layer.alert('请输入合约地址');
             return false;
         }
-        if (!isJSON($("#abi").val())) {
-            layer.alert('Abi内容错误');
-            return false;
-        }
+
         let abiMethod = xmSelectAbi.getValue()
-        console.log(abiMethod)
         if (abiMethod.length === 0) {
             layer.alert('选择执行的合约方法');
             return false;
         }
         abiMethod = abiMethod[0].value;
 
-        let abi = JSON.parse($("#abi").val())
         let abiSingle = abi[abiMethod]
         let contract = await web3.eth.contract(abi).at(contractAddress)
 
