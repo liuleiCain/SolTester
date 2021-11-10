@@ -96,7 +96,7 @@ async function sendTx(abi) {
                 if (err) {
                     $("#content").text(JSON.stringify(err, null, "\t"))
                 } else {
-                    res = transferJson(res)
+                    res = transferJson(res, abiSingle.outputs)
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
                 layer.closeAll('loading');
@@ -106,7 +106,7 @@ async function sendTx(abi) {
                 if (err) {
                     $("#content").text(JSON.stringify(err, null, "\t"))
                 } else {
-                    res = transferJson(res)
+                    res = transferJson(res, abiSingle.outputs)
                     $("#content").text(JSON.stringify(res, null, "\t"))
                 }
                 layer.closeAll('loading');
@@ -137,16 +137,12 @@ function isJSON(str) {
     }
 }
 
-function transferJson(data) {
+function transferJson(data, outputs) {
     try {
-        data = JSON.stringify(data)
-        data = JSON.parse(data)
-
-        if (typeof data === 'string') {
-            data = data.toString()
-        } else if (typeof data === 'object') {
-            for (let i in data) {
-                data[i] = data[i].toString()
+        for (let i in outputs) {
+            console.log(outputs[i])
+            if (outputs[i].type.indexOf("int") != -1) {
+                data[i] = data[i].toString(10)
             }
         }
         return data
