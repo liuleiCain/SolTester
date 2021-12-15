@@ -34,6 +34,7 @@
     <ul class="layui-nav left fast-add">
         <li class="layui-nav-item">
             <a href="javascript:;" onclick="connectWeb3(this)" id="connectBtn">点击连接钱包</a>
+            <span id="account"></span>
         </li>
     </ul>
 </div>
@@ -47,12 +48,6 @@
                 <a onclick="xadmin.add_tab('ABI管理','/abiList.html')">
                     <i class="iconfont left-nav-li" lay-tips="ABI管理">&#xe6b5;</i>
                     <cite>ABI管理</cite>
-                    <i class="iconfont nav_right">&#xe6a7;</i></a>
-            </li>
-            <li>
-                <a onclick="xadmin.add_tab('部署合约','/deploy.html')">
-                    <i class="iconfont left-nav-li" lay-tips="部署合约">&#xe719;</i>
-                    <cite>部署合约</cite>
                     <i class="iconfont nav_right">&#xe6a7;</i></a>
             </li>
             <li>
@@ -118,9 +113,13 @@
         window.ethereum.request({method: 'eth_accounts'})
             .then(function (res) {
                 if (res.length > 0) {
-                    $(obj).html("钱包已连接: <span id='account'>" + res[0] + "</span>")
+                    $("#connectBtn").hide()
+                    $("#account").html(res[0])
+                    $("#account").show()
                 } else {
-                    $("#connectBtn").html("点击连接钱包")
+                    $("#account").hide()
+                    $("#connectBtn").show()
+                    $("#account").html("")
                 }
             })
             .catch((err) => {
@@ -135,12 +134,16 @@
     }
 
     $(function () {
-        window.ethereum.on('accountsChanged', (accounts) => {
+        window.ethereum.on('accountsChanged', (res) => {
             if (window.ethereum.isConnected()) {
-                if (accounts.length > 0) {
-                    $("#account").html(accounts[0] || "")
+                if (res.length > 0) {
+                    $("#connectBtn").hide()
+                    $("#account").html(res[0])
+                    $("#account").show()
                 } else {
-                    $("#connectBtn").html("点击连接钱包")
+                    $("#account").hide()
+                    $("#connectBtn").show()
+                    $("#account").html("")
                 }
             }
         });
@@ -148,15 +151,17 @@
             window.ethereum.request({method: 'eth_accounts'})
                 .then(function (res) {
                     if (res.length > 0) {
-                        $("#connectBtn").html("钱包已连接: <span id='account'>" + res[0] + "</span>")
+                        $("#connectBtn").hide()
+                        $("#account").html(res[0])
+                        $("#account").show()
                     } else {
-                        $("#connectBtn").html("点击连接钱包")
+                        $("#account").hide()
+                        $("#connectBtn").show()
+                        $("#account").html("")
                     }
                 })
                 .catch((err) => {
                     if (err.code === 4001) {
-                        // EIP-1193 userRejectedRequest error
-                        // If this happens, the user rejected the connection request.
                         layer.alert('Please connect to MetaMask.');
                     } else {
                         console.error(err);

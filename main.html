@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="/css/layui.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/xm-select.js"></script>
-    <script src="/js/metamask.web3.min.js"></script>
+    <script type="application/javascript" src="/js/ethers-5.2.umd.min.js"></script>
 </head>
 
 <body>
@@ -25,6 +25,14 @@
                     <select name="address" lay-verify="required" id="address" lay-filter="address">
                         <option value=""></option>
                     </select>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">Value：</label>
+                <div class="layui-input-block">
+                    <input type="text" name="value" id="value" placeholder="此功能主要针对给合约转主链代币功能，不支持payable的方法必须留空" autocomplete="off"
+                           class="layui-input">
                 </div>
             </div>
 
@@ -57,6 +65,8 @@
 <script src="/js/index.js"></script>
 <script>
     let form, layer, xmSelectAbi, ABI, ADDRESS;
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
 
     let contractList = window.localStorage.getItem("ContractList")
     contractList = JSON.parse(contractList)
@@ -83,11 +93,44 @@
 
     $(function () {
         $("#send").click(function () {
-            if ($("#address").val() !== "") {
-                sendTx(ADDRESS, ABI)
-            } else {
-                layer.msg("请选择执行的合约")
+            if (typeof window.ethereum == 'undefined') {
+                layer.alert('MetaMask is not installed!');
+                return false;
             }
+            if (!window.ethereum.isConnected()) {
+                layer.alert('MetaMask is not connected!');
+                return false;
+            }
+            if (ADDRESS === "") {
+                layer.alert('请输入合约地址');
+                return false;
+            }
+
+            let abiMethod = xmSelectAbi.getValue()
+            if (abiMethod.length === 0) {
+                layer.alert('选择执行的合约方法');
+                return false;
+            }
+            let abiSingle = ABI[abiMethod[0].value]
+
+            //获取参数
+            let args = []
+            $("#abiInput").find("input").each(function (i) {
+                let argType = $(this).attr("argType");
+                if (argType.indexOf("[]") !== -1) {
+                    args.push(JSON.parse($(this).val()))
+                } else {
+                    args.push($(this).val())
+                }
+            })
+
+            //获取option
+            let options = {}
+            if ($("#value").val() != "") {
+                options.value = $("#value").val()
+            }
+            layer.load();
+            sendTx(ADDRESS, ABI, abiSingle, args, options)
         })
     })
 </script>

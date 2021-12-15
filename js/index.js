@@ -53,66 +53,19 @@ function updateAbi(abi) {
     form.render()
 }
 
-async function sendTx(address, abi) {
+async function sendTx(contractAddress, abi, abiSingle, args, options) {
     try {
-        let contractAddress = address
-        if (typeof window.ethereum == 'undefined') {
-            layer.alert('MetaMask is not installed!');
-            return false;
-        }
-        if (!window.ethereum.isConnected()) {
-            layer.alert('MetaMask is not connected!');
-            return false;
-        }
-        if (contractAddress === "") {
-            layer.alert('请输入合约地址');
-            return false;
-        }
-
-        let abiMethod = xmSelectAbi.getValue()
-        if (abiMethod.length === 0) {
-            layer.alert('选择执行的合约方法');
-            return false;
-        }
-        abiMethod = abiMethod[0].value;
-
-        let abiSingle = abi[abiMethod]
-        let contract = await web3.eth.contract(abi).at(contractAddress)
-
-        //获取参数
-        let args = []
-        $("#abiInput").find("input").each(function (i) {
-            let argType = $(this).attr("argType");
-            if (argType.indexOf("[]") !== -1) {
-                args.push(JSON.parse($(this).val()))
-            } else {
-                args.push($(this).val())
-            }
-        })
-
-        layer.load();
-        if (args.length === 0) {
-            contract[abiSingle.name](function (err, res) {
-                if (err) {
-                    $("#content").text(JSON.stringify(err, null, "\t"))
-                } else {
-                    res = transferJson(res, abiSingle.outputs)
-                    $("#content").text(JSON.stringify(res, null, "\t"))
-                }
-                layer.closeAll('loading');
-            })
+        console.log(options)
+        let contract = new ethers.Contract(contractAddress, abi, signer);
+        let tx = await contract[abiSingle.name](...args, options)
+        if (tx.hasOwnProperty("wait")) {
+            await tx.wait()
+            $("#content").text(JSON.stringify(tx.hash, null, "\t"))
         } else {
-            contract[abiSingle.name](...args, function (err, res) {
-                if (err) {
-                    $("#content").text(JSON.stringify(err, null, "\t"))
-                } else {
-                    res = transferJson(res, abiSingle.outputs)
-                    $("#content").text(JSON.stringify(res, null, "\t"))
-                }
-                layer.closeAll('loading');
-            })
+            tx = transferJson(tx, abiSingle.outputs)
+            $("#content").text(JSON.stringify(tx, null, "\t"))
         }
-
+        layer.closeAll('loading');
     } catch (e) {
         console.log(e)
         layer.closeAll('loading');
