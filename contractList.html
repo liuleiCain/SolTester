@@ -50,9 +50,6 @@
         let contractList = window.localStorage.getItem("ContractList")
         if (!contractList) return false;
         contractList = JSON.parse(contractList)
-        // contractList.sort(function (a,b) {
-        //     return a.name.localeCompare(b.name)
-        // })
 
         let html = ""
         for (let i in contractList) {
@@ -83,7 +80,7 @@
         } else {
             window.localStorage.removeItem("ContractList")
         }
-        $(obj).parent().parent().remove()
+        window.location.reload()
     }
 </script>
 
