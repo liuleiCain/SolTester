@@ -55,7 +55,6 @@ function updateAbi(abi) {
 
 async function sendTx(contractAddress, abi, abiSingle, args, options) {
     try {
-        console.log(options)
         let contract = new ethers.Contract(contractAddress, abi, signer);
         let tx = await contract[abiSingle.name](...args, options)
         if (tx.hasOwnProperty("wait")) {
@@ -93,18 +92,21 @@ function isJSON(str) {
 function transferJson(data, outputs) {
     try {
         if (outputs.length > 1) {
+            let newData = []
             for (let i in outputs) {
-                console.log(outputs[i])
                 if (outputs[i].type.indexOf("int") != -1) {
-                    data[i] = data[i].toString(10)
+                    newData.push(data[i].toString(10))
+                } else {
+                    newData.push(data[i])
                 }
             }
+            return newData
         } else if (outputs.length == 1) {
             if (outputs[0].type.indexOf("int") != -1) {
                 data = data.toString(10)
             }
+            return data
         }
-        return data
     } catch (e) {
         return data
     }
