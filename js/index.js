@@ -53,9 +53,9 @@ function updateAbi(abi) {
     form.render()
 }
 
-async function sendTx(abi) {
+async function sendTx(address, abi) {
     try {
-        let contractAddress = $("#address").val()
+        let contractAddress = address
         if (typeof window.ethereum == 'undefined') {
             layer.alert('MetaMask is not installed!');
             return false;
@@ -76,8 +76,8 @@ async function sendTx(abi) {
         }
         abiMethod = abiMethod[0].value;
 
-        let abiSingle = abi.abi[abiMethod]
-        let contract = await web3.eth.contract(abi.abi).at(contractAddress)
+        let abiSingle = abi[abiMethod]
+        let contract = await web3.eth.contract(abi).at(contractAddress)
 
         //获取参数
         let args = []
@@ -139,10 +139,16 @@ function isJSON(str) {
 
 function transferJson(data, outputs) {
     try {
-        for (let i in outputs) {
-            console.log(outputs[i])
-            if (outputs[i].type.indexOf("int") != -1) {
-                data[i] = data[i].toString(10)
+        if (outputs.length > 1) {
+            for (let i in outputs) {
+                console.log(outputs[i])
+                if (outputs[i].type.indexOf("int") != -1) {
+                    data[i] = data[i].toString(10)
+                }
+            }
+        } else if (outputs.length == 1) {
+            if (outputs[0].type.indexOf("int") != -1) {
+                data = data.toString(10)
             }
         }
         return data
